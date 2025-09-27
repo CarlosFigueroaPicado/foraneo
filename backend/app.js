@@ -147,7 +147,190 @@ app.delete('/api/reservas/:id', (req, res) => {
   res.status(204).end();
 });
 
-// Start the server
+//
+// ==== TRANSPORTS STORAGE ====
+let transports = [];
+
+// ==== EXPERIENCES STORAGE ====
+let experiences = [];
+
+// ==== REVIEWS STORAGE ====
+let reviews = [];
+
+// ==== NOTIFICATIONS STORAGE ====
+let notifications = [];
+
+// ==== ITINERARIES STORAGE ====
+let itineraries = [];
+
+// ==== PAYMENTS STORAGE ====
+let payments = [];
+
+// ==== TRANSPORT ROUTES ====
+// Get all transports
+app.get('/api/transports', (req, res) => {
+  res.json(transports);
+});
+
+// Get single transport by ID
+app.get('/api/transports/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const transport = transports.find(t => t.id === id);
+  if (!transport) {
+    return res.status(404).json({ error: 'Transporte no encontrado' });
+  }
+  res.json(transport);
+});
+
+// Create a new transport
+app.post('/api/transports', (req, res) => {
+  const newTransport = { id: generateId(transports), ...req.body };
+  transports.push(newTransport);
+  res.status(201).json(newTransport);
+});
+
+// Update a transport
+app.put('/api/transports/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const index = transports.findIndex(t => t.id === id);
+  if (index === -1) {
+    return res.status(404).json({ error: 'Transporte no encontrado' });
+  }
+  transports[index] = { id, ...req.body };
+  res.json(transports[index]);
+});
+
+// Delete a transport
+app.delete('/api/transports/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const index = transports.findIndex(t => t.id === id);
+  if (index === -1) {
+    return res.status(404).json({ error: 'Transporte no encontrado' });
+  }
+  const deleted = transports.splice(index, 1);
+  res.json(deleted[0]);
+});
+
+// ==== EXPERIENCES ROUTES ====
+app.get('/api/experiences', (req, res) => {
+  res.json(experiences);
+});
+
+app.get('/api/experiences/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const experience = experiences.find(e => e.id === id);
+  if (!experience) {
+    return res.status(404).json({ error: 'Experiencia no encontrada' });
+  }
+  res.json(experience);
+});
+
+app.post('/api/experiences', (req, res) => {
+  const newExperience = { id: generateId(experiences), ...req.body };
+  experiences.push(newExperience);
+  res.status(201).json(newExperience);
+});
+
+app.put('/api/experiences/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const index = experiences.findIndex(e => e.id === id);
+  if (index === -1) {
+    return res.status(404).json({ error: 'Experiencia no encontrada' });
+  }
+  experiences[index] = { id, ...req.body };
+  res.json(experiences[index]);
+});
+
+app.delete('/api/experiences/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const index = experiences.findIndex(e => e.id === id);
+  if (index === -1) {
+    return res.status(404).json({ error: 'Experiencia no encontrada' });
+  }
+  const deleted = experiences.splice(index, 1);
+  res.json(deleted[0]);
+});
+
+// ==== REVIEWS ROUTES ====
+app.get('/api/reviews', (req, res) => {
+  res.json(reviews);
+});
+
+app.post('/api/reviews', (req, res) => {
+  const newReview = { id: generateId(reviews), ...req.body };
+  reviews.push(newReview);
+  res.status(201).json(newReview);
+});
+
+app.delete('/api/reviews/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const index = reviews.findIndex(r => r.id === id);
+  if (index === -1) {
+    return res.status(404).json({ error: 'Reseña no encontrada' });
+  }
+  const deleted = reviews.splice(index, 1);
+  res.json(deleted[0]);
+});
+
+// ==== NOTIFICATIONS ROUTES ====
+app.get('/api/notifications', (req, res) => {
+  res.json(notifications);
+});
+
+app.post('/api/notifications', (req, res) => {
+  const newNotification = { id: generateId(notifications), ...req.body };
+  notifications.push(newNotification);
+  res.status(201).json(newNotification);
+});
+
+app.delete('/api/notifications/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const index = notifications.findIndex(n => n.id === id);
+  if (index === -1) {
+    return res.status(404).json({ error: 'Notificación no encontrada' });
+  }
+  const deleted = notifications.splice(index, 1);
+  res.json(deleted[0]);
+});
+
+// ==== ITINERARIES ROUTES ====
+app.get('/api/itineraries', (req, res) => {
+  res.json(itineraries);
+});
+
+app.post('/api/itineraries', (req, res) => {
+  const newItinerary = { id: generateId(itineraries), ...req.body };
+  itineraries.push(newItinerary);
+  res.status(201).json(newItinerary);
+});
+
+app.put('/api/itineraries/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const index = itineraries.findIndex(i => i.id === id);
+  if (index === -1) {
+    return res.status(404).json({ error: 'Itinerario no encontrado' });
+  }
+  itineraries[index] = { id, ...req.body };
+  res.json(itineraries[index]);
+});
+
+app.delete('/api/itineraries/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const index = itineraries.findIndex(i => i.id === id);
+  if (index === -1) {
+    return res.status(404).json({ error: 'Itinerario no encontrado' });
+  }
+  const deleted = itineraries.splice(index, 1);
+  res.json(deleted[0]);
+});
+
+// ==== PAYMENTS ROUTES ====
+app.post('/api/payments', (req, res) => {
+  const newPayment = { id: generateId(payments), ...req.body };
+  payments.push(newPayment);
+  res.status(201).json({ message: 'Pago procesado', payment: newPayment });
+});
+ Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor backend corriendo en puerto ${PORT}`);
