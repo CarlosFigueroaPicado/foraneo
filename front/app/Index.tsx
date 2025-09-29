@@ -1,4 +1,4 @@
-import { Image, ImageBackground, SafeAreaView, ScrollView, Text, View } from 'react-native';
+import { Image, ImageBackground, Pressable, ScrollView, Text, View } from 'react-native';
 import { useState } from 'react';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
@@ -6,8 +6,11 @@ import { Chip } from '../components/ui/Chip';
 import { RatingBadge } from '../components/ui/RatingBadge';
 import { SectionHeader } from '../components/ui/SectionHeader';
 import { curatedActivities, heroEvents, quickFilters } from '../constants/content';
+import { useNavigation } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function InicioMenuScreen() {
+  const navigation = useNavigation();
   const [activeFilter, setActiveFilter] = useState('Todo');
 
   return (
@@ -16,13 +19,17 @@ export default function InicioMenuScreen() {
         <View className="px-6 pt-6">
           <View className="flex-row items-center justify-between">
             <View>
-              <Text className="text-sm text-neutral-500">Buenos días, viajero</Text>
+              <Text className="text-sm">Buenos días, viajero</Text>
               <Text className="mt-1 text-2xl font-semibold text-neutral-900">¿Dónde quieres ir hoy?</Text>
             </View>
+            <Pressable onPress={() => {
+              navigation.navigate('Perfil');
+            }}>
             <Image
-              source={require('../../resources/icon.png')}
+              source={require('../resources/icon.png')}
               className="h-12 w-12 rounded-full border-2 border-white drop-shadow-md"
             />
+            </Pressable>
           </View>
 
           <ScrollView

@@ -1,14 +1,16 @@
-import { ImageBackground, SafeAreaView, ScrollView, Text, View } from 'react-native';
-import { Button } from '../components/ui/Button';
+import { ImageBackground, Pressable, ScrollView, Text, View } from 'react-native';
 import { InputField } from '../components/ui/InputField';
+import { useNavigation } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function LoginScreen() {
+  const navigation = useNavigation();
   return (
     <SafeAreaView className="flex-1 bg-background-default">
       <ScrollView contentContainerStyle={{ paddingBottom: 32 }} className="flex-1">
         <View>
           <ImageBackground
-            source={require('../../resources/Login-19.png')}
+            source={require('../resources/Login-19.png')}
             className="h-80 w-full overflow-hidden rounded-b-4xl"
             imageStyle={{ resizeMode: 'cover' }}
           >
@@ -19,7 +21,7 @@ export default function LoginScreen() {
                   Vive experiencias inolvidables
                 </Text>
               </View>
-              <View className="rounded-3xl bg-white/20 px-4 py-3">
+              <View className="rounded-3xl bg-white/30 px-4 py-3">
                 <Text className="text-sm text-white/90">
                   Crea tu plan de viaje personalizado, descubre eventos culturales y encuentra tu próxima aventura.
                 </Text>
@@ -41,7 +43,13 @@ export default function LoginScreen() {
             <Text className="text-sm font-medium text-primary">¿Olvidaste tu contraseña?</Text>
           </View>
 
-          <Button label="Ingresar" className="mt-6" />
+          <Pressable onPress={
+            () => {
+              navigation.navigate('Index');
+            }
+          } className="mt-6 bg-blue-600 rounded-2xl px-4 py-3 items-center">
+            <Text className="text-white">Ingresar</Text>
+          </Pressable>
 
           <View className="mt-8 flex-row items-center justify-center">
             <Text className="text-sm text-neutral-500">¿Aún no tienes cuenta?</Text>

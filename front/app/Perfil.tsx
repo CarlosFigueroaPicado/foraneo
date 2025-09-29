@@ -1,8 +1,9 @@
-import { Image, SafeAreaView, ScrollView, Text, View } from 'react-native';
+import { Image, ScrollView, Text, View } from 'react-native';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { SectionHeader } from '../components/ui/SectionHeader';
 import { profileShortcuts } from '../constants/content';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function PerfilScreen() {
   return (
@@ -10,7 +11,7 @@ export default function PerfilScreen() {
       <ScrollView className="flex-1" contentContainerStyle={{ padding: 24, paddingBottom: 48 }}>
         <Card className="items-center bg-accent-coral/95">
           <Image
-            source={require('../../resources/depositphotos_205163866-stock-photo-smiling-traveler-hat-backpack-tourist.jpg')}
+            source={require('../resources/depositphotos_205163866-stock-photo-smiling-traveler-hat-backpack-tourist.jpg')}
             className="h-24 w-24 rounded-full border-4 border-white"
           />
           <Text className="mt-4 text-xl font-semibold text-white">Adriana Méndez</Text>

@@ -1,15 +1,14 @@
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Image, ImageBackground, Pressable, SafeAreaView, ScrollView, Text, View } from 'react-native';
+import { Image, ImageBackground, Pressable, ScrollView, Text, View } from 'react-native';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { RatingBadge } from '../components/ui/RatingBadge';
 import { SectionHeader } from '../components/ui/SectionHeader';
 import { curatedActivities, experienceHighlights, heroEvents, sampleItinerary } from '../constants/content';
-import type { RootStackParamList } from '../navigation';
+import { useNavigation } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function DetalleScreen() {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation = useNavigation();
   const experience = heroEvents[0];
   const related = curatedActivities.slice(0, 2);
 
