@@ -4,7 +4,7 @@
     "slug": "foraneo",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./resources/icon.png",
     "scheme": "foraneo",
     "platforms": ["ios", "android", "web"],
     "jsEngine": "hermes",
