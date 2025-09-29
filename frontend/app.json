@@ -1,0 +1,18 @@
+{
+  "expo": {
+    "name": "Foráneo",
+    "slug": "foraneo",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "foraneo",
+    "platforms": ["ios", "android", "web"],
+    "jsEngine": "hermes",
+    "extra": {
+      "supabaseUrl": "${EXPO_PUBLIC_SUPABASE_URL}",
+      "supabaseAnonKey": "${EXPO_PUBLIC_SUPABASE_ANON_KEY}",
+      "stripeKey": "${EXPO_PUBLIC_STRIPE_KEY}",
+      "mapboxToken": "${EXPO_PUBLIC_MAPBOX_TOKEN}"
+    }
+  }
+}
