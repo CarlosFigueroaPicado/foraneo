@@ -1,0 +1,9 @@
+node_modules
+.expo
+dist
+build
+.expo-shared
+*.log
+.env
+.env.*
+web-build/
