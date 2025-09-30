@@ -5,9 +5,15 @@ export default function Layout() {
     <Stack
       screenOptions={{
         headerShown: false,
-      }}>
-      {/* Optionally configure static options outside the route.*/}
+      }}
+      initialRouteName="Login"
+    >
       <Stack.Screen name="Login" options={{}} />
+      <Stack.Screen name="SignIn" options={{}} />
+      <Stack.Screen name="Index" options={{}} />
+      <Stack.Screen name="Detalle" options={{}} />
+      <Stack.Screen name="Perfil" options={{}} />
+      <Stack.Screen name="sign-up" options={{ headerShown: true, title: 'Crear cuenta' }} />
     </Stack>
   );
 }

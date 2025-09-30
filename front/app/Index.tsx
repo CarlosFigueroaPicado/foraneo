@@ -6,15 +6,15 @@ import { Chip } from '../components/ui/Chip';
 import { RatingBadge } from '../components/ui/RatingBadge';
 import { SectionHeader } from '../components/ui/SectionHeader';
 import { curatedActivities, heroEvents, quickFilters } from '../constants/content';
-import { useNavigation } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function InicioMenuScreen() {
-  const navigation = useNavigation();
+  const router = useRouter();
   const [activeFilter, setActiveFilter] = useState('Todo');
 
   return (
-    <SafeAreaView className="flex-1 bg-background-default">
+    <SafeAreaView className="flex-1 bg-white">
       <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 40 }}>
         <View className="px-6 pt-6">
           <View className="flex-row items-center justify-between">
@@ -22,9 +22,11 @@ export default function InicioMenuScreen() {
               <Text className="text-sm">Buenos días, viajero</Text>
               <Text className="mt-1 text-2xl font-semibold text-neutral-900">¿Dónde quieres ir hoy?</Text>
             </View>
-            <Pressable onPress={() => {
-              navigation.navigate('Perfil');
-            }}>
+            <Pressable
+              onPress={() => {
+                router.push('/Perfil');
+              }}
+            >
             <Image
               source={require('../resources/icon.png')}
               className="h-12 w-12 rounded-full border-2 border-white drop-shadow-md"
@@ -128,9 +130,9 @@ export default function InicioMenuScreen() {
         </View>
 
         <View className="mt-8 px-6">
-          <Card className="items-center bg-accent-navy">
-            <Text className="text-xs uppercase tracking-[2px] text-white/80">Planificador Inteligente</Text>
-            <Text className="mt-2 text-2xl font-semibold text-white text-center">
+          <Card className="items-center bg-primary/20">
+            <Text className="text-xs uppercase tracking-[2px] text-neutral-800/80">Planificador Inteligente</Text>
+            <Text className="mt-2 text-2xl font-semibold text-neutral-900 text-center">
               Diseña itinerarios personalizados con IA y recibe recomendaciones diarias.
             </Text>
             <Button label="Probar ahora" variant="secondary" className="mt-5 self-stretch" />
