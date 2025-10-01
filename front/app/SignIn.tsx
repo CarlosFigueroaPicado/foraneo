@@ -1,15 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
 import {
-  Animated,
   ActivityIndicator,
+  Animated,
+  Easing,
+  Image,
   KeyboardAvoidingView,
   Platform,
   Pressable,
-  ScrollView,
   Text,
   TextInput,
   View,
-  Easing,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Link, useRouter } from 'expo-router';
@@ -17,7 +17,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFonts } from 'expo-font';
 import { Baloo2_700Bold } from '@expo-google-fonts/baloo-2';
 import { Inter_400Regular, Inter_600SemiBold } from '@expo-google-fonts/inter';
-import { Feather, FontAwesome } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
+import PhoneIllustration from '../resources/login y registro/teléfono.svg';
 
 const gradientColors = ['#34D399', '#FACC15', '#22D3EE'] as const;
 const buttonColor = '#2E3192';
@@ -40,10 +41,9 @@ export default function SignInScreen() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [formError, setFormError] = useState<string | null>(null);
 
   const phoneOffset = useRef(new Animated.Value(0)).current;
-  const calendarOffset = useRef(new Animated.Value(0)).current;
+  const cameraOffset = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     const createFloatAnimation = (value: Animated.Value, delay: number) =>
@@ -66,16 +66,16 @@ export default function SignInScreen() {
       );
 
     const phoneLoop = createFloatAnimation(phoneOffset, 0);
-    const calendarLoop = createFloatAnimation(calendarOffset, 600);
+    const cameraLoop = createFloatAnimation(cameraOffset, 600);
 
     phoneLoop.start();
-    calendarLoop.start();
+    cameraLoop.start();
 
     return () => {
       phoneLoop.stop();
-      calendarLoop.stop();
+      cameraLoop.stop();
     };
-  }, [phoneOffset, calendarOffset]);
+  }, [cameraOffset, phoneOffset]);
 
   const [fontsLoaded] = useFonts({
     Baloo2_700Bold,
@@ -84,14 +84,7 @@ export default function SignInScreen() {
   });
 
   const handleSignIn = () => {
-    if (!email.trim() || !password.trim()) {
-      setFormError('Por favor, completa tu correo y contraseña para continuar.');
-      return;
-    }
-
-    setFormError(null);
-    console.log('Iniciando sesión con', { email });
-    router.replace('/');
+  router.replace('/home');
   };
 
   if (!fontsLoaded) {
@@ -108,30 +101,29 @@ export default function SignInScreen() {
   return (
     <LinearGradient colors={gradientColors} style={{ flex: 1 }}>
       <SafeAreaView className="flex-1">
+        <View pointerEvents="none" className="absolute inset-0">
+          <Image
+            source={require('../resources/Adobe Express - patronloginn.gif')}
+            className="h-full w-full opacity-30"
+            resizeMode="cover"
+          />
+        </View>
+
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
           style={{ flex: 1 }}
         >
-          <ScrollView
-            contentContainerStyle={{ paddingBottom: 120 }}
-            className="flex-1"
-          >
-            <View className="px-6 pt-16">
+          <View className="flex-1 px-6 pt-16 pb-28">
+            <View className="items-center">
               <Text
                 className="text-center text-3xl text-white"
                 style={{ fontFamily: 'Baloo2_700Bold' }}
               >
                 BIENVENIDO A FORÁNEO
               </Text>
-              <Text
-                className="mt-6 text-center text-base text-white/85"
-                style={{ fontFamily: 'Inter_400Regular' }}
-              >
-                Descubre experiencias únicas y planifica tus aventuras con nosotros.
-              </Text>
             </View>
 
-            <View className="px-6 pt-10">
+            <View className="mt-10 flex-1 justify-center">
               <View
                 className="rounded-[24px] bg-white/95 p-6"
                 style={cardShadow}
@@ -161,7 +153,6 @@ export default function SignInScreen() {
                       value={email}
                       onChangeText={(value) => {
                         setEmail(value);
-                        if (formError) setFormError(null);
                       }}
                       keyboardType="email-address"
                       inputMode="email"
@@ -186,7 +177,6 @@ export default function SignInScreen() {
                       value={password}
                       onChangeText={(value) => {
                         setPassword(value);
-                        if (formError) setFormError(null);
                       }}
                       secureTextEntry
                       placeholder="Ingresa tu contraseña"
@@ -213,15 +203,6 @@ export default function SignInScreen() {
                   </Text>
                 </Pressable>
 
-                {formError ? (
-                  <Text
-                    className="mt-3 text-center text-sm"
-                    style={{ fontFamily: 'Inter_600SemiBold', color: '#F97316' }}
-                  >
-                    {formError}
-                  </Text>
-                ) : null}
-
                 <View className="mt-6 flex-row items-center justify-center">
                   <Text
                     className="text-sm"
@@ -239,20 +220,20 @@ export default function SignInScreen() {
                 </View>
               </View>
             </View>
-          </ScrollView>
+          </View>
 
-          <View className="pointer-events-none absolute bottom-10 left-0 right-0 flex-row justify-between px-10">
+          <View className="pointer-events-none absolute bottom-6 left-0 right-0 flex-row items-center justify-between px-10">
             <AnimatedView
               className="rounded-full border border-white/30 p-3"
               style={{ transform: [{ translateY: phoneOffset }] }}
             >
-              <Feather name="phone" size={24} color="rgba(255,255,255,0.8)" />
+              <PhoneIllustration width={32} height={32} fill="#FFFFFF" style={{ opacity: 0.85 }} />
             </AnimatedView>
             <AnimatedView
               className="rounded-full border border-white/30 p-3"
-              style={{ transform: [{ translateY: calendarOffset }] }}
+              style={{ transform: [{ translateY: cameraOffset }] }}
             >
-              <FontAwesome name="calendar" size={24} color="rgba(255,255,255,0.8)" />
+              <Feather name="camera" size={24} color="rgba(255,255,255,0.8)" />
             </AnimatedView>
           </View>
         </KeyboardAvoidingView>
