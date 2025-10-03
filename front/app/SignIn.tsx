@@ -103,7 +103,7 @@ export default function SignInScreen() {
       <SafeAreaView className="flex-1">
         <View pointerEvents="none" className="absolute inset-0">
           <Image
-            source={require('../resources/Adobe Express - patronloginn.gif')}
+            source={require('../resources/login y registro/GIF patron login.gif')}
             className="h-full w-full opacity-30"
             resizeMode="cover"
           />
@@ -116,7 +116,7 @@ export default function SignInScreen() {
           <View className="flex-1 px-6 pt-16 pb-28">
             <View className="items-center">
               <Text
-                className="text-center text-3xl text-white"
+                className="text-center text-2xl text-white"
                 style={{ fontFamily: 'Baloo2_700Bold' }}
               >
                 BIENVENIDO A FORÁNEO
@@ -129,13 +129,13 @@ export default function SignInScreen() {
                 style={cardShadow}
               >
                 <Text
-                  className="text-center text-base"
+                  className="text-center text-sm"
                   style={{ fontFamily: 'Inter_600SemiBold', color: aquaAccent }}
                 >
                   INICIAR SESIÓN
                 </Text>
                 <Text
-                  className="mt-2 text-center text-sm"
+                  className="mt-2 text-center text-xs"
                   style={{ fontFamily: 'Inter_400Regular', color: subtleText }}
                 >
                   Ingresa tus datos para continuar explorando el mundo Foráneo.
@@ -144,7 +144,7 @@ export default function SignInScreen() {
                 <View className="mt-6 space-y-4">
                   <View>
                     <Text
-                      className="text-sm"
+                      className="text-xs"
                       style={{ fontFamily: 'Inter_600SemiBold', color: primaryText }}
                     >
                       Correo electrónico
@@ -160,7 +160,7 @@ export default function SignInScreen() {
                       autoCorrect={false}
                       placeholder="tu@correo.com"
                       placeholderTextColor={placeholderColor}
-                      className="mt-2 rounded-xl border border-[#E5E7EB] bg-white px-4 py-3 text-base"
+                      className="mt-2 rounded-xl border border-[#E5E7EB] bg-white px-4 py-3 text-sm"
                       style={{ fontFamily: 'Inter_400Regular', color: primaryText }}
                       accessibilityLabel="Campo para ingresar correo electrónico"
                     />
@@ -168,7 +168,7 @@ export default function SignInScreen() {
 
                   <View>
                     <Text
-                      className="text-sm"
+                      className="text-xs"
                       style={{ fontFamily: 'Inter_600SemiBold', color: primaryText }}
                     >
                       Contraseña
@@ -181,7 +181,7 @@ export default function SignInScreen() {
                       secureTextEntry
                       placeholder="Ingresa tu contraseña"
                       placeholderTextColor={placeholderColor}
-                      className="mt-2 rounded-xl border border-[#E5E7EB] bg-white px-4 py-3 text-base"
+                      className="mt-2 rounded-xl border border-[#E5E7EB] bg-white px-4 py-3 text-sm"
                       style={{ fontFamily: 'Inter_400Regular', color: primaryText }}
                       accessibilityLabel="Campo para ingresar contraseña"
                     />
@@ -196,7 +196,7 @@ export default function SignInScreen() {
                   style={{ backgroundColor: buttonColor }}
                 >
                   <Text
-                    className="text-center text-base text-white"
+                    className="text-center text-sm text-white"
                     style={{ fontFamily: 'Inter_600SemiBold' }}
                   >
                     Iniciar Sesión
@@ -205,14 +205,14 @@ export default function SignInScreen() {
 
                 <View className="mt-6 flex-row items-center justify-center">
                   <Text
-                    className="text-sm"
+                    className="text-xs"
                     style={{ fontFamily: 'Inter_400Regular', color: subtleText }}
                   >
                     ¿No tienes cuenta?
                   </Text>
                   <Link
                     href="/sign-up"
-                    className="ml-2 text-sm"
+                    className="ml-2 text-xs"
                     style={{ fontFamily: 'Inter_600SemiBold', color: aquaAccent }}
                   >
                     REGÍSTRATE AQUÍ
