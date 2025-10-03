@@ -1,144 +1,82 @@
-import { Image, ImageBackground, Pressable, ScrollView, Text, View } from 'react-native';
-import { useState } from 'react';
-import { Button } from '../components/ui/Button';
-import { Card } from '../components/ui/Card';
-import { Chip } from '../components/ui/Chip';
-import { RatingBadge } from '../components/ui/RatingBadge';
-import { SectionHeader } from '../components/ui/SectionHeader';
-import { curatedActivities, heroEvents, quickFilters } from '../constants/content';
+import { useEffect, useRef, useState } from 'react';
+import { Animated, Easing, Image, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-export default function InicioMenuScreen() {
+const AnimatedView = Animated.View;
+
+export default function SplashScreen() {
   const router = useRouter();
-  const [activeFilter, setActiveFilter] = useState('Todo');
+  const progressValue = useRef(new Animated.Value(0)).current;
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const listenerId = progressValue.addListener(({ value }) => {
+      setProgress(Math.min(100, Math.round(value)));
+    });
+
+    const animation = Animated.timing(progressValue, {
+      toValue: 100,
+      duration: 3500,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: false,
+    });
+
+    animation.start(({ finished }) => {
+      if (finished) {
+        router.replace('/SignIn');
+      }
+    });
+
+    return () => {
+      progressValue.removeListener(listenerId);
+      animation.stop();
+    };
+  }, [progressValue, router]);
+
+  const progressWidth = progressValue.interpolate({
+    inputRange: [0, 100],
+    outputRange: ['0%', '100%'],
+  });
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 40 }}>
-        <View className="px-6 pt-6">
-          <View className="flex-row items-center justify-between">
-            <View>
-              <Text className="text-sm">Buenos días, viajero</Text>
-              <Text className="mt-1 text-2xl font-semibold text-neutral-900">¿Dónde quieres ir hoy?</Text>
-            </View>
-            <Pressable
-              onPress={() => {
-                router.push('/Perfil');
-              }}
-            >
-            <Image
-              source={require('../resources/icon.png')}
-              className="h-12 w-12 rounded-full border-2 border-white drop-shadow-md"
-            />
-            </Pressable>
-          </View>
-
-          <ScrollView
-            className="mt-6"
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingRight: 24 }}
-          >
-            {heroEvents.map((item) => (
-              <ImageBackground
-                key={item.id}
-                source={item.image}
-                className="mr-4 h-64 w-56 overflow-hidden rounded-4xl"
-                imageStyle={{ resizeMode: 'cover' }}
-              >
-                <View className="flex-1 justify-between bg-neutral-900/25 p-5">
-                  <View className="items-start">
-                    <View className="rounded-full bg-white/80 px-3 py-1">
-                      <Text className="text-xs font-medium text-neutral-700">{item.category}</Text>
-                    </View>
-                    <Text className="mt-3 text-2xl font-semibold text-white leading-tight">{item.title}</Text>
-                    <Text className="mt-2 text-sm text-white/80" numberOfLines={3}>
-                      {item.description}
-                    </Text>
-                  </View>
-                  <View className="flex-row items-center justify-between">
-                    <RatingBadge rating={item.rating} reviews={item.reviews} />
-                    {item.price ? <Text className="text-sm font-semibold text-white">{item.price}</Text> : null}
-                  </View>
-                </View>
-              </ImageBackground>
-            ))}
-          </ScrollView>
-
-          <View className="mt-8">
-            <SectionHeader
-              title="Explora por categorías"
-              subtitle="Filtra experiencias según tu mood de viaje"
-              action={<Text className="text-sm font-semibold text-primary">Ver todo</Text>}
-            />
-            <View className="flex-row flex-wrap">
-              {quickFilters.map((filter) => (
-                <Chip
-                  key={filter}
-                  label={filter}
-                  active={activeFilter === filter}
-                  onPress={() => setActiveFilter(filter)}
-                />
-              ))}
+    <LinearGradient colors={['#0F172A', '#1F2937']} style={{ flex: 1 }}>
+      <SafeAreaView style={{ flex: 1 }}>
+        <View
+          style={{ flex: 1 }}
+          className="items-center justify-center px-8"
+        >
+          <View className="w-full max-w-md rounded-3xl bg-white/10 p-4">
+            <View className="w-full overflow-hidden rounded-2xl bg-black/20" style={{ aspectRatio: 16 / 9 }}>
+              <Image
+                source={require('../assets/animacion_logo.gif')}
+                resizeMode="contain"
+                style={{ width: '100%', height: '100%' }}
+              />
             </View>
           </View>
-        </View>
 
-        <View className="mt-4 px-6">
-          <SectionHeader
-            title="Curaduría de la semana"
-            subtitle="Seleccionamos eventos imprescindibles para ti"
-            action={<Text className="text-sm font-semibold text-primary">Ver calendario</Text>}
-          />
-
-          <View className="space-y-5">
-            {curatedActivities.map((activity) => (
-              <Card key={activity.id}>
-                <View className="flex-row items-start">
-                  <Image
-                    source={activity.image}
-                    className="mr-4 h-24 w-24 rounded-3xl"
-                    resizeMode="cover"
-                  />
-                  <View className="flex-1">
-                    <View className="flex-row items-center justify-between">
-                      <Text className="text-xs uppercase tracking-[1.5px] text-neutral-400">
-                        {activity.category}
-                      </Text>
-                      {activity.date ? (
-                        <View className="rounded-full bg-primary/10 px-3 py-1">
-                          <Text className="text-xs font-semibold text-primary">{activity.date}</Text>
-                        </View>
-                      ) : null}
-                    </View>
-                    <Text className="mt-2 text-xl font-semibold text-neutral-900">{activity.title}</Text>
-                    <Text className="mt-2 text-sm text-neutral-500" numberOfLines={2}>
-                      {activity.description}
-                    </Text>
-                    <View className="mt-3 flex-row items-center justify-between">
-                      <RatingBadge rating={activity.rating} reviews={activity.reviews} />
-                      {activity.price ? (
-                        <Text className="text-sm font-semibold text-primary">{activity.price}</Text>
-                      ) : null}
-                    </View>
-                  </View>
-                </View>
-              </Card>
-            ))}
-          </View>
-        </View>
-
-        <View className="mt-8 px-6">
-          <Card className="items-center bg-primary/20">
-            <Text className="text-xs uppercase tracking-[2px] text-neutral-800/80">Planificador Inteligente</Text>
-            <Text className="mt-2 text-2xl font-semibold text-neutral-900 text-center">
-              Diseña itinerarios personalizados con IA y recibe recomendaciones diarias.
+          <View className="mt-10 w-full max-w-md">
+            <View className="h-3 w-full overflow-hidden rounded-full bg-white/20">
+              <AnimatedView
+                style={{
+                  width: progressWidth,
+                  height: '100%',
+                  backgroundColor: '#22D3EE',
+                  borderRadius: 999,
+                }}
+              />
+            </View>
+            <Text className="mt-3 text-center text-base font-semibold text-white">
+              {progress}%
             </Text>
-            <Button label="Probar ahora" variant="secondary" className="mt-5 self-stretch" />
-          </Card>
+            <Text className="mt-1 text-center text-sm text-white/70">
+              Preparando tu experiencia Foráneo...
+            </Text>
+          </View>
         </View>
-      </ScrollView>
-    </SafeAreaView>
+      </SafeAreaView>
+    </LinearGradient>
   );
 }

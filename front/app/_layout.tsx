@@ -6,11 +6,11 @@ export default function Layout() {
       screenOptions={{
         headerShown: false,
       }}
-      initialRouteName="Login"
+      initialRouteName="SignIn"
     >
-      <Stack.Screen name="Login" options={{}} />
       <Stack.Screen name="SignIn" options={{}} />
-      <Stack.Screen name="Index" options={{}} />
+  <Stack.Screen name="Index" options={{}} />
+  <Stack.Screen name="home" options={{}} />
       <Stack.Screen name="Detalle" options={{}} />
       <Stack.Screen name="Perfil" options={{}} />
       <Stack.Screen name="sign-up" options={{ headerShown: true, title: 'Crear cuenta' }} />
