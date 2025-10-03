@@ -10,6 +10,7 @@ import {
   Platform,
   Pressable,
   ScrollView,
+  StyleSheet,
   Text,
   TextInput,
   View,
@@ -20,7 +21,6 @@ import { Controller, useForm } from 'react-hook-form';
 import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useFonts } from 'expo-font';
-import { Baloo2_700Bold } from '@expo-google-fonts/baloo-2';
 import { Inter_400Regular, Inter_600SemiBold } from '@expo-google-fonts/inter';
 import PhoneIllustration from '../resources/login y registro/teléfono.svg';
 
@@ -28,7 +28,6 @@ const REGISTER_URL = 'https://api.tu-dominio.com/auth/register'; // TODO: Reempl
 
 const gradientColors = ['#34D399', '#FACC15', '#22D3EE'] as const;
 const buttonColor = '#2E3192';
-const aquaAccent = '#37CFE3';
 const primaryText = '#111827';
 const helperText = '#6B7280';
 const placeholderColor = '#9CA3AF';
@@ -119,7 +118,6 @@ export default function SignUpScreen() {
   }, [cameraOffset, phoneOffset]);
 
   const [fontsLoaded] = useFonts({
-    Baloo2_700Bold,
     Inter_400Regular,
     Inter_600SemiBold,
   });
@@ -167,10 +165,10 @@ export default function SignUpScreen() {
   return (
     <LinearGradient colors={gradientColors} style={{ flex: 1 }}>
       <SafeAreaView className="flex-1">
-        <View pointerEvents="none" className="absolute inset-0">
+        <View pointerEvents="none" style={styles.backgroundLayer}>
           <Image
             source={require('../resources/login y registro/GIF patron login.gif')}
-            className="h-full w-full opacity-30"
+            style={styles.backgroundImage}
             resizeMode="cover"
           />
         </View>
@@ -185,23 +183,8 @@ export default function SignUpScreen() {
             keyboardShouldPersistTaps="handled"
           >
             <View className="flex-1 px-6 pt-16">
-              <View className="items-center">
-                <Text
-                  className="text-center text-2xl text-white"
-                  style={{ fontFamily: 'Baloo2_700Bold' }}
-                >
-                  CREA TU EXPERIENCIA FORÁNEA
-                </Text>
-              </View>
-
-              <View className="mt-10 flex-1">
+              <View className="flex-1">
                 <View className="rounded-[24px] bg-white/95 p-6" style={cardShadow}>
-                  <Text
-                    className="text-center text-sm"
-                    style={{ fontFamily: 'Inter_600SemiBold', color: aquaAccent }}
-                  >
-                    CREAR CUENTA
-                  </Text>
                   <Text
                     className="mt-2 text-center text-xs"
                     style={{ fontFamily: 'Inter_400Regular', color: helperText }}
@@ -322,7 +305,7 @@ export default function SignUpScreen() {
                             value={value}
                             onChangeText={onChange}
                             onBlur={onBlur}
-                            placeholder="DD/MM/YY"
+                            placeholder="DD-MM-YY"
                             placeholderTextColor={placeholderColor}
                             keyboardType="number-pad"
                             className="mt-2 rounded-xl border border-[#E5E7EB] bg-white px-4 py-3 text-sm"
@@ -385,28 +368,6 @@ export default function SignUpScreen() {
                       </Text>
                     )}
                   </Pressable>
-
-                  <View className="mt-6 flex-row items-center justify-center">
-                    <Text
-                      className="text-xs"
-                      style={{ color: helperText, fontFamily: 'Inter_400Regular' }}
-                    >
-                      ¿Ya tienes cuenta?
-                    </Text>
-                    <Pressable
-                      onPress={() => router.replace('/SignIn')}
-                      className="ml-2"
-                      accessibilityRole="link"
-                      accessibilityLabel="Ir a la pantalla de inicio de sesión"
-                    >
-                      <Text
-                        className="text-xs"
-                        style={{ color: aquaAccent, fontFamily: 'Inter_600SemiBold' }}
-                      >
-                        Inicia sesión
-                      </Text>
-                    </Pressable>
-                  </View>
                 </View>
               </View>
             </View>
@@ -487,3 +448,13 @@ export default function SignUpScreen() {
     </LinearGradient>
   );
 }
+
+const styles = StyleSheet.create({
+  backgroundLayer: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  backgroundImage: {
+    ...StyleSheet.absoluteFillObject,
+    opacity: 0.3,
+  },
+});

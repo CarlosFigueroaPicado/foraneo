@@ -7,6 +7,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
+  StyleSheet,
   Text,
   TextInput,
   View,
@@ -101,10 +102,10 @@ export default function SignInScreen() {
   return (
     <LinearGradient colors={gradientColors} style={{ flex: 1 }}>
       <SafeAreaView className="flex-1">
-        <View pointerEvents="none" className="absolute inset-0">
+        <View pointerEvents="none" style={styles.backgroundLayer}>
           <Image
             source={require('../resources/login y registro/GIF patron login.gif')}
-            className="h-full w-full opacity-30"
+            style={styles.backgroundImage}
             resizeMode="cover"
           />
         </View>
@@ -241,3 +242,13 @@ export default function SignInScreen() {
     </LinearGradient>
   );
 }
+
+const styles = StyleSheet.create({
+  backgroundLayer: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  backgroundImage: {
+    ...StyleSheet.absoluteFillObject,
+    opacity: 0.3,
+  },
+});
