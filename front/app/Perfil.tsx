@@ -1,11 +1,30 @@
+import { useState } from 'react';
 import { Image, ScrollView, Text, View } from 'react-native';
+import { useRouter } from 'expo-router';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { SectionHeader } from '../components/ui/SectionHeader';
 import { profileShortcuts } from '../constants/content';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { signOut } from '../src/lib/supabase';
 
 export default function PerfilScreen() {
+  const router = useRouter();
+  const [isSigningOut, setIsSigningOut] = useState(false);
+
+  const handleSignOut = async () => {
+    if (isSigningOut) return;
+    setIsSigningOut(true);
+    try {
+      await signOut();
+      router.replace('/(auth)/login');
+    } catch (error) {
+      console.error('sign_out_error', error);
+    } finally {
+      setIsSigningOut(false);
+    }
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-background-default">
       <ScrollView className="flex-1" contentContainerStyle={{ padding: 24, paddingBottom: 48 }}>
@@ -78,6 +97,19 @@ export default function PerfilScreen() {
             <PreferenceRow primary="Intereses" secondary="Cultura, Gastronomía, Naturaleza" />
             <PreferenceRow primary="Método de pago" secondary="Visa terminación 4821" />
           </Card>
+        </View>
+
+        <View className="mt-12">
+          <Button
+            label={isSigningOut ? 'Cerrando sesión…' : 'Cerrar sesión'}
+            onPress={handleSignOut}
+            variant="ghost"
+            disabled={isSigningOut}
+            className="border border-red-200 bg-red-50"
+          />
+          <Text className="mt-3 text-center text-xs text-neutral-400">
+            Usa esta opción cuando quieras volver a iniciar sesión con otra cuenta.
+          </Text>
         </View>
 
         <View className="mt-12 items-center">

@@ -8,5 +8,11 @@
   "devDependencies": {
     "@types/react": "^19.1.16",
     "typescript": "^5.9.2"
+  },
+  "scripts": {
+    "sb:login": "npx supabase --workdir backend login",
+    "sb:link": "npx supabase --workdir backend link --project-ref fstuupaudepkufaqtmwr",
+    "sb:push": "npx supabase --workdir backend db push --linked",
+    "sb:func:deploy": "npx supabase --workdir backend functions deploy --no-verify-jwt"
   }
 }

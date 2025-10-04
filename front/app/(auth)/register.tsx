@@ -13,14 +13,15 @@ import {
   View,
 } from 'react-native';
 import { Controller, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { Feather } from '@expo/vector-icons';
 import { Link, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AuthBackground from '../../src/components/AuthBackground';
 import AuthFloatingIcons from '../../src/components/AuthFloatingIcons';
 import LoginBg from '../../assets/login.svg';
-
-const REGISTER_URL = 'https://api.tu-dominio.com/auth/register';
+import { supabase } from '../../src/lib/supabase';
 
 const primaryText = '#111827';
 const helperText = '#6B7280';
@@ -39,18 +40,58 @@ const countries = [
   { code: 'ES', name: 'España' },
 ] as const;
 
-type SignUpFormValues = {
-  email: string;
-  password: string;
-  username: string;
-  birthdate: string;
-  country: string;
-};
+const countryNames = countries.map((country) => country.name as string);
+
+const signUpSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .email('Ingresa un correo válido'),
+  password: z
+    .string()
+    .min(8, 'La contraseña debe tener al menos 8 caracteres')
+    .regex(/^(?=.*[A-Za-z])(?=.*\d).+$/, 'Debe incluir letras y números'),
+  username: z
+    .string()
+    .min(3, 'El usuario debe tener al menos 3 caracteres')
+    .regex(/^@?[A-Za-z0-9._]+$/, 'Solo puedes usar letras, números, guiones bajos y puntos'),
+  birthdate: z
+    .string()
+    .regex(/^\d{2}\/\d{2}\/\d{4}$/, 'Usa el formato DD/MM/AAAA')
+    .refine((value) => {
+      const [day, month, year] = value.split('/').map(Number);
+      const date = new Date(year, month - 1, day);
+      if (Number.isNaN(date.getTime())) {
+        return false;
+      }
+      const isValidDate =
+        date.getFullYear() === year &&
+        date.getMonth() === month - 1 &&
+        date.getDate() === day;
+      if (!isValidDate) {
+        return false;
+      }
+      const today = new Date();
+      const ageDiff = today.getFullYear() - year;
+      if (ageDiff < 13) {
+        return false;
+      }
+      return true;
+    }, 'Ingresa una fecha válida (mayor de 13 años).'),
+  country: z
+    .string()
+    .min(1, 'Selecciona tu país')
+    .refine((value) => countryNames.includes(value), 'Selecciona un país válido'),
+});
+
+type SignUpFormValues = z.infer<typeof signUpSchema>;
 
 export default function RegisterScreen() {
   const router = useRouter();
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [countryModalVisible, setCountryModalVisible] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
 
   const orderedCountries = useMemo(() => {
     return [...countries].sort((a, b) => a.name.localeCompare(b.name));
@@ -61,7 +102,8 @@ export default function RegisterScreen() {
     handleSubmit,
     reset,
     setValue,
-    formState: { isSubmitting },
+    setError,
+    formState: { isSubmitting, errors },
   } = useForm<SignUpFormValues>({
     defaultValues: {
       email: '',
@@ -70,25 +112,124 @@ export default function RegisterScreen() {
       birthdate: '',
       country: '',
     },
+    resolver: zodResolver(signUpSchema),
     mode: 'onChange',
   });
 
+  const formatBirthdate = (text: string) => {
+    const digits = text.replace(/\D/g, '').slice(0, 8);
+    if (digits.length <= 2) {
+      return digits;
+    }
+    if (digits.length <= 4) {
+      return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+    }
+    return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
+  };
+
+  const toIsoBirthdate = (value: string) => {
+    const [day, month, year] = value.split('/');
+    if (!day || !month || !year) {
+      return value;
+    }
+    return `${year}-${month}-${day}`;
+  };
+
   const onSubmit = async (values: SignUpFormValues) => {
+    setFormError(null);
+    const usernameWithAt = values.username.startsWith('@') ? values.username : `@${values.username}`;
+    const normalizedUsername = usernameWithAt.trim();
+    const isoBirthdate = toIsoBirthdate(values.birthdate);
+
     try {
-      const response = await fetch(REGISTER_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(values),
+      const { data: emailData, error: emailError } = await supabase.functions.invoke<{
+        available: boolean;
+      }>('check-email', {
+        body: { email: values.email },
       });
 
-      if (response.ok) {
-        reset();
-        router.replace('/(auth)/login');
+      if (emailError) {
+        if (/invalid api key/i.test(emailError.message ?? '')) {
+          setFormError(
+            'No se pudo validar el correo porque la anon key es inválida en las funciones. Revisa el despliegue de "check-email" y la variable SERVICE_ROLE_KEY.',
+          );
+        } else {
+          console.warn('email_check_error', emailError);
+        }
+      } else if (emailData && !emailData.available) {
+        setError('email', {
+          type: 'manual',
+          message: 'Este correo ya está registrado.',
+        });
+        return;
       }
     } catch (error) {
-      // TODO: manejar errores de red.
+      console.warn('email_check_invoke_error', error);
+    }
+
+    try {
+      const { data: checkData, error: checkError } = await supabase.functions.invoke<{
+        available: boolean;
+      }>('check-username', {
+        body: { username: normalizedUsername },
+      });
+
+      if (checkError) {
+        if (/invalid api key/i.test(checkError.message ?? '')) {
+          setFormError(
+            'No se pudo validar el usuario porque la anon key es inválida en las funciones. Revisa el despliegue de la función "check-username" y la variable SUPABASE_SERVICE_ROLE_KEY.',
+          );
+        } else {
+          console.warn('username_check_error', checkError);
+        }
+      } else if (checkData && !checkData.available) {
+        setError('username', {
+          type: 'manual',
+          message: 'Este nombre de usuario ya está en uso.',
+        });
+        return;
+      }
+    } catch (error) {
+      console.warn('username_check_invoke_error', error);
+    }
+
+    try {
+      const { error: signUpError } = await supabase.auth.signUp({
+        email: values.email,
+        password: values.password,
+        options: {
+          emailRedirectTo: undefined,
+          data: {
+            username: normalizedUsername,
+            birthdate: isoBirthdate,
+            birthdate_display: values.birthdate,
+            country: values.country,
+          },
+        },
+      });
+
+      if (signUpError) {
+        const message = signUpError.message ?? 'No se pudo crear la cuenta.';
+        if (/registered|exists/i.test(message)) {
+          setError('email', {
+            type: 'manual',
+            message: 'Este correo ya está registrado.',
+          });
+          return;
+        }
+        setFormError(message);
+        return;
+      }
+
+      reset();
+      router.replace('/(auth)/login');
+    } catch (error) {
+      console.warn('sign_up_error', error);
+      if (error instanceof Error) {
+        setFormError(error.message);
+      } else {
+        setFormError('Ocurrió un error inesperado. Inténtalo más tarde.');
+      }
     }
   };
 
@@ -123,6 +264,7 @@ export default function RegisterScreen() {
                       inputMode="email"
                       autoCapitalize="none"
                       autoCorrect={false}
+                      textContentType="emailAddress"
                       placeholder="tu@correo.com"
                       placeholderTextColor={placeholderColor}
                       style={styles.input}
@@ -130,6 +272,9 @@ export default function RegisterScreen() {
                     />
                   )}
                 />
+                {errors.email?.message ? (
+                  <Text style={styles.errorText}>{errors.email.message}</Text>
+                ) : null}
               </View>
 
               <View style={styles.field}>
@@ -149,6 +294,7 @@ export default function RegisterScreen() {
                         style={[styles.input, styles.passwordInput]}
                         accessibilityLabel="Campo para ingresar contraseña"
                         autoCapitalize="none"
+                        textContentType="newPassword"
                       />
                       <Pressable
                         onPress={() => setIsPasswordVisible((prev) => !prev)}
@@ -165,6 +311,9 @@ export default function RegisterScreen() {
                     </View>
                   )}
                 />
+                {errors.password?.message ? (
+                  <Text style={styles.errorText}>{errors.password.message}</Text>
+                ) : null}
               </View>
 
               <View style={styles.field}>
@@ -193,6 +342,9 @@ export default function RegisterScreen() {
                     />
                   )}
                 />
+                {errors.username?.message ? (
+                  <Text style={styles.errorText}>{errors.username.message}</Text>
+                ) : null}
               </View>
 
               <View style={styles.field}>
@@ -203,16 +355,21 @@ export default function RegisterScreen() {
                   render={({ field: { onChange, onBlur, value } }) => (
                     <TextInput
                       value={value}
-                      onChangeText={onChange}
+                      onChangeText={(text) => onChange(formatBirthdate(text))}
                       onBlur={onBlur}
-                      placeholder="DD/MM/YY"
+                      placeholder="DD/MM/AAAA"
                       placeholderTextColor={placeholderColor}
                       keyboardType="number-pad"
+                      inputMode="numeric"
+                      maxLength={10}
                       style={styles.input}
                       accessibilityLabel="Campo para ingresar fecha de nacimiento"
                     />
                   )}
                 />
+                {errors.birthdate?.message ? (
+                  <Text style={styles.errorText}>{errors.birthdate.message}</Text>
+                ) : null}
               </View>
 
               <View style={styles.field}>
@@ -234,6 +391,9 @@ export default function RegisterScreen() {
                     </Pressable>
                   )}
                 />
+                {errors.country?.message ? (
+                  <Text style={styles.errorText}>{errors.country.message}</Text>
+                ) : null}
               </View>
 
               <Pressable
@@ -249,6 +409,8 @@ export default function RegisterScreen() {
                   <Text style={styles.primaryButtonText}>Crear cuenta</Text>
                 )}
               </Pressable>
+
+              {formError ? <Text style={styles.errorText}>{formError}</Text> : null}
 
               <View style={styles.footer}>
                 <Text style={styles.footerText}>¿Ya tienes cuenta?</Text>
@@ -275,7 +437,7 @@ export default function RegisterScreen() {
                   renderItem={({ item }) => (
                     <Pressable
                       onPress={() => {
-                        setValue('country', item.name);
+                        setValue('country', item.name, { shouldValidate: true });
                         setCountryModalVisible(false);
                       }}
                       style={styles.modalItem}
@@ -458,5 +620,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: primaryText,
     fontFamily: 'NunitoSemi',
+  },
+  errorText: {
+    fontSize: 12,
+    color: '#DC2626',
+    fontFamily: 'Nunito',
   },
 });

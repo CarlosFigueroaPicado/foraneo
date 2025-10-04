@@ -10,10 +10,9 @@ import {
   View,
 } from 'react-native';
 import { Controller, useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Feather } from '@expo/vector-icons';
-import { Link, useRouter } from 'expo-router';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Link } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AuthBackground from '../../src/components/AuthBackground';
 import AuthFloatingIcons from '../../src/components/AuthFloatingIcons';
@@ -25,39 +24,36 @@ const placeholderColor = '#D1D5DB';
 const primaryText = '#111827';
 const subtleText = '#9CA3AF';
 
-const signInSchema = z.object({
+const resetSchema = z.object({
   email: z
     .string()
     .trim()
     .toLowerCase()
     .email('Ingresa un correo válido'),
-  password: z.string().min(1, 'Ingresa tu contraseña'),
 });
 
-type SignInFormValues = z.infer<typeof signInSchema>;
+type ResetFormValues = z.infer<typeof resetSchema>;
 
-export default function LoginScreen() {
-  const router = useRouter();
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+export default function ResetPasswordScreen() {
   const [formError, setFormError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const {
     control,
     handleSubmit,
-    setError,
     reset,
     formState: { isSubmitting, errors },
-  } = useForm<SignInFormValues>({
+  } = useForm<ResetFormValues>({
     defaultValues: {
       email: '',
-      password: '',
     },
-    resolver: zodResolver(signInSchema),
+    resolver: zodResolver(resetSchema),
     mode: 'onChange',
   });
 
-  const handleSignIn = async (values: SignInFormValues) => {
+  const handleReset = async (values: ResetFormValues) => {
     setFormError(null);
+    setSuccessMessage(null);
 
     if (!supabaseConfigStatus.urlLoaded || !supabaseConfigStatus.anonKeyLoaded) {
       setFormError(
@@ -72,37 +68,19 @@ export default function LoginScreen() {
     }
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email: values.email,
-        password: values.password,
-      });
+      const { error } = await supabase.auth.resetPasswordForEmail(values.email);
 
       if (error) {
-        if (/Invalid login credentials/i.test(error.message)) {
-          setError('password', {
-            type: 'manual',
-            message: 'Credenciales inválidas. Verifica tu correo y contraseña.',
-          });
-          return;
-        }
-
-        if (/invalid api key/i.test(error.message)) {
-          setFormError(
-            'Supabase rechazó la llave pública. Genera una nueva anon key en el panel y reemplázala en .env local.',
-          );
-          return;
-        }
-
-        setFormError(error.message ?? 'No se pudo iniciar sesión.');
+        setFormError(error.message ?? 'No se pudo enviar el correo de restablecimiento.');
         return;
       }
 
+      setSuccessMessage('Te enviamos un enlace para restablecer tu contraseña. Revisa tu correo.');
       reset();
-      router.replace('/home');
-    } catch (err) {
-      console.warn('sign_in_error', err);
-      if (err instanceof Error) {
-        setFormError(err.message);
+    } catch (error) {
+      console.warn('reset_password_error', error);
+      if (error instanceof Error) {
+        setFormError(error.message);
       } else {
         setFormError('Ocurrió un error inesperado. Inténtalo más tarde.');
       }
@@ -118,9 +96,9 @@ export default function LoginScreen() {
         >
           <View style={styles.container}>
             <View style={styles.headerWrapper}>
-              <Text style={styles.headerTitle}>BIENVENIDO A FORÁNEO</Text>
+              <Text style={styles.headerTitle}>RESTABLECER CONTRASEÑA</Text>
               <Text style={styles.headerSubtitle}>
-                Ingresa tus datos para continuar explorando el mundo Foráneo.
+                Ingresa tu correo electrónico y te enviaremos un enlace para crear una nueva contraseña.
               </Text>
             </View>
 
@@ -152,72 +130,27 @@ export default function LoginScreen() {
                 ) : null}
               </View>
 
-              <View style={styles.field}>
-                <Text style={styles.label}>Contraseña</Text>
-                <Controller
-                  control={control}
-                  name="password"
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <View style={styles.passwordWrapper}>
-                      <TextInput
-                        value={value}
-                        onChangeText={onChange}
-                        onBlur={onBlur}
-                        secureTextEntry={!isPasswordVisible}
-                        placeholder="Ingresa tu contraseña"
-                        placeholderTextColor={placeholderColor}
-                        style={[styles.input, styles.passwordInput]}
-                        accessibilityLabel="Campo para ingresar contraseña"
-                        autoCapitalize="none"
-                        textContentType="password"
-                      />
-                      <Pressable
-                        onPress={() => setIsPasswordVisible((prev) => !prev)}
-                        hitSlop={12}
-                        accessibilityRole="button"
-                        accessibilityLabel={isPasswordVisible ? 'Ocultar contraseña' : 'Mostrar contraseña'}
-                      >
-                        <Feather
-                          name={isPasswordVisible ? 'eye-off' : 'eye'}
-                          size={18}
-                          color={placeholderColor}
-                        />
-                      </Pressable>
-                    </View>
-                  )}
-                />
-                {errors.password?.message ? (
-                  <Text style={styles.errorText}>{errors.password.message}</Text>
-                ) : null}
-              </View>
-
-              <View style={styles.secondaryFooter}>
-                <Text style={styles.footerText}>¿Olvidó su contraseña?</Text>
-                <Link href="/(auth)/reset-password" style={styles.footerLink}>
-                  RESTABLECER AQUÍ
-                </Link>
-              </View>
-
               <Pressable
-                onPress={handleSubmit(handleSignIn)}
+                onPress={handleSubmit(handleReset)}
                 accessibilityRole="button"
-                accessibilityLabel="Iniciar sesión en la aplicación Foráneo"
+                accessibilityLabel="Enviar enlace de restablecimiento"
                 style={[styles.primaryButton, isSubmitting && styles.buttonDisabled]}
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (
                   <ActivityIndicator color="#FFFFFF" />
                 ) : (
-                  <Text style={styles.primaryButtonText}>Iniciar sesión</Text>
+                  <Text style={styles.primaryButtonText}>Enviar enlace</Text>
                 )}
               </Pressable>
 
               {formError ? <Text style={styles.errorText}>{formError}</Text> : null}
+              {successMessage ? <Text style={styles.successText}>{successMessage}</Text> : null}
 
               <View style={styles.footer}>
-                <Text style={styles.footerText}>¿No tienes cuenta?</Text>
-                <Link href="/(auth)/register" style={styles.footerLink}>
-                  REGÍSTRATE AQUÍ
+                <Text style={styles.footerText}>¿Recordaste tu contraseña?</Text>
+                <Link href="/(auth)/login" style={styles.footerLink}>
+                  Inicia sesión
                 </Link>
               </View>
             </View>
@@ -284,21 +217,6 @@ const styles = StyleSheet.create({
     color: primaryText,
     backgroundColor: '#FFFFFF',
   },
-  passwordWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-    paddingHorizontal: 16,
-    backgroundColor: '#FFFFFF',
-  },
-  passwordInput: {
-    flex: 1,
-    borderWidth: 0,
-    paddingHorizontal: 0,
-    backgroundColor: 'transparent',
-  },
   primaryButton: {
     marginTop: 8,
     borderRadius: 14,
@@ -332,15 +250,14 @@ const styles = StyleSheet.create({
     color: '#37CFE3',
     fontFamily: 'NunitoSemi',
   },
-  secondaryFooter: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    gap: 8,
-  },
   errorText: {
     fontSize: 12,
     color: '#DC2626',
+    fontFamily: 'Nunito',
+  },
+  successText: {
+    fontSize: 12,
+    color: '#16A34A',
     fontFamily: 'Nunito',
   },
 });
