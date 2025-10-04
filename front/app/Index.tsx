@@ -25,7 +25,7 @@ export default function SplashScreen() {
 
     animation.start(({ finished }) => {
       if (finished) {
-        router.replace('/SignIn');
+        router.replace('/(auth)/login');
       }
     });
 

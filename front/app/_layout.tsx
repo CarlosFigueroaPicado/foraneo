@@ -1,18 +1,17 @@
 import { Stack } from 'expo-router';
+import { useFonts } from 'expo-font';
+import { View } from 'react-native';
 
 export default function Layout() {
-  return (
-    <Stack
-      screenOptions={{
-        headerShown: false,
-      }}
-      initialRouteName="SignIn"
-    >
-      <Stack.Screen name="SignIn" options={{}} />
-  <Stack.Screen name="Index" options={{}} />
-  <Stack.Screen name="home" options={{}} />
-      <Stack.Screen name="Detalle" options={{}} />
-      <Stack.Screen name="Perfil" options={{}} />
-    </Stack>
-  );
+  const [loaded] = useFonts({
+    BalooBold: require('../assets/fonts/Baloo2-Bold.ttf'),
+    Nunito: require('../assets/fonts/Nunito-Regular.ttf'),
+    NunitoSemi: require('../assets/fonts/Nunito-SemiBold.ttf'),
+  });
+
+  if (!loaded) {
+    return <View />;
+  }
+
+  return <Stack screenOptions={{ headerShown: false }} />;
 }
