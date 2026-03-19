@@ -143,7 +143,14 @@ export default function HomeScreen() {
             <Text className="mt-2 text-2xl font-semibold text-neutral-900 text-center">
               Diseña itinerarios personalizados con IA y recibe recomendaciones diarias.
             </Text>
-            <Button label="Probar ahora" variant="secondary" className="mt-5 self-stretch" />
+            <Button
+              label="Probar ahora"
+              variant="secondary"
+              className="mt-5 self-stretch"
+              onPress={() => {
+                router.push('/AIChat');
+              }}
+            />
           </Card>
         </View>
       </ScrollView>
