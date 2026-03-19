@@ -13,6 +13,7 @@ Foráneo es una aplicación multiplataforma (móvil y web) diseñada para simpli
 - **Exploración de destinos** con filtros por ciudad, categoría y calificaciones.
 - **Reservas en tiempo real** de hospedajes, tours, transporte y otros servicios.
 - **Itinerarios personalizados** que pueden guardarse y consultarse offline.
+- **Planificador Inteligente con IA** - Asistente de viaje potenciado por Claude AI que ayuda a planificar itinerarios personalizados y ofrece recomendaciones diarias. Ver [guía de configuración](CLAUDE_INTEGRATION.md).
 - **Reseñas y recompensas** para promover la calidad de los servicios.
 - **Pagos integrados** con soporte para tarjetas, Apple/Google Pay y moneda local a través de Stripe.
 - **Seguridad y soporte** con contactos de emergencia, chat con proveedores y mapas offline.
@@ -32,6 +33,7 @@ Foráneo es una aplicación multiplataforma (móvil y web) diseñada para simpli
 
 - **Supabase** (PostgreSQL + PostGIS) para base de datos, autenticación, almacenamiento y funciones edge.
 - Autenticación con OTP/email y proveedores externos (Google/Apple).
+- Integración con **Claude AI** (Anthropic) para el asistente inteligente de viajes.
 - Integración con **Stripe** para pagos seguros.
 - Lógica de reservas implementada con políticas RLS y transacciones.
 
@@ -39,8 +41,9 @@ Foráneo es una aplicación multiplataforma (móvil y web) diseñada para simpli
 
 - **Node.js 18** o superior.
 - **Expo CLI** instalado globalmente.
-- Cuentas en **Supabase**, **Stripe** y **Mapbox** para habilitar servicios.
+- Cuentas en **Supabase**, **Stripe**, **Mapbox** y **Claude AI** (Anthropic) para habilitar servicios.
 - Definir variables de entorno en un archivo `.env` (ver `.env.example`).
+- Para configurar Claude AI, ver la [guía de integración completa](CLAUDE_INTEGRATION.md).
 
 ## Instalación y ejecución
 
