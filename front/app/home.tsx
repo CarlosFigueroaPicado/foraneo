@@ -8,15 +8,26 @@ import { SectionHeader } from '../components/ui/SectionHeader';
 import { curatedActivities, heroEvents, quickFilters } from '../constants/content';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useResponsive, useResponsiveValue } from '../hooks/useResponsive';
 
 export default function HomeScreen() {
   const router = useRouter();
   const [activeFilter, setActiveFilter] = useState('Todo');
+  const { isMedium, isLarge, isXLarge } = useResponsive();
+
+  // Responsive values
+  const containerPadding = useResponsiveValue({ base: 24, md: 32, lg: 48, xl: 64 });
+  const heroCardWidth = useResponsiveValue({ base: 224, md: 280, lg: 320 });
+  const heroCardHeight = useResponsiveValue({ base: 256, md: 300, lg: 360 });
+  const activityImageSize = useResponsiveValue({ base: 96, md: 112, lg: 128 });
+
+  // Use grid layout for tablets and larger screens
+  const useTwoColumns = isMedium || isLarge || isXLarge;
 
   return (
     <SafeAreaView className="flex-1 bg-white">
       <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 40 }}>
-        <View className="px-6 pt-6">
+        <View style={{ paddingHorizontal: containerPadding, paddingTop: 24 }}>
           <View className="flex-row items-center justify-between">
             <View>
               <Text className="text-sm">Buenos días, viajero</Text>
@@ -51,7 +62,8 @@ export default function HomeScreen() {
               >
                 <ImageBackground
                   source={item.image}
-                  className="mr-4 h-64 w-56 overflow-hidden rounded-4xl"
+                  style={{ width: heroCardWidth, height: heroCardHeight, marginRight: 16 }}
+                  className="overflow-hidden rounded-4xl"
                   imageStyle={{ resizeMode: 'cover' }}
                 >
                   <View className="flex-1 justify-between bg-neutral-900/25 p-5">
@@ -93,20 +105,21 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        <View className="mt-4 px-6">
+        <View style={{ marginTop: 16, paddingHorizontal: containerPadding }}>
           <SectionHeader
             title="Curaduría de la semana"
             subtitle="Seleccionamos eventos imprescindibles para ti"
             action={<Text className="text-sm font-semibold text-primary">Ver calendario</Text>}
           />
 
-          <View className="space-y-5">
+          <View className={useTwoColumns ? 'flex-row flex-wrap -mx-2' : 'space-y-5'}>
             {curatedActivities.map((activity) => (
-              <Card key={activity.id}>
+              <Card key={activity.id} className={useTwoColumns ? 'w-[48%] mx-2 mb-4' : ''}>
                 <View className="flex-row items-start">
                   <Image
                     source={activity.image}
-                    className="mr-4 h-24 w-24 rounded-3xl"
+                    style={{ width: activityImageSize, height: activityImageSize }}
+                    className="mr-4 rounded-3xl"
                     resizeMode="cover"
                   />
                   <View className="flex-1">
@@ -137,7 +150,7 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        <View className="mt-8 px-6">
+        <View style={{ marginTop: 32, paddingHorizontal: containerPadding }}>
           <Card className="items-center bg-primary/20">
             <Text className="text-xs uppercase tracking-[2px] text-neutral-800/80">Planificador Inteligente</Text>
             <Text className="mt-2 text-2xl font-semibold text-neutral-900 text-center">

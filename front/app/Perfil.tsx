@@ -4,15 +4,25 @@ import { Card } from '../components/ui/Card';
 import { SectionHeader } from '../components/ui/SectionHeader';
 import { profileShortcuts } from '../constants/content';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useResponsive, useResponsiveValue } from '../hooks/useResponsive';
 
 export default function PerfilScreen() {
+  const { isMedium, isLarge, isXLarge } = useResponsive();
+  const containerPadding = useResponsiveValue({ base: 24, md: 32, lg: 48, xl: 64 });
+  const avatarSize = useResponsiveValue({ base: 96, md: 112, lg: 128 });
+  const iconBoxSize = useResponsiveValue({ base: 64, md: 72, lg: 80 });
+
+  // Use 3 columns for medium screens and 4 for large screens
+  const shortcutWidth = isMedium ? '30%' : isLarge || isXLarge ? '22%' : '46%';
+
   return (
     <SafeAreaView className="flex-1 bg-background-default">
-      <ScrollView className="flex-1" contentContainerStyle={{ padding: 24, paddingBottom: 48 }}>
+      <ScrollView className="flex-1" contentContainerStyle={{ padding: containerPadding, paddingBottom: 48 }}>
         <Card className="items-center bg-accent-coral/95">
           <Image
             source={require('../resources/depositphotos_205163866-stock-photo-smiling-traveler-hat-backpack-tourist.jpg')}
-            className="h-24 w-24 rounded-full border-4 border-white"
+            style={{ width: avatarSize, height: avatarSize }}
+            className="rounded-full border-4 border-white"
           />
           <Text className="mt-4 text-xl font-semibold text-white">Adriana Méndez</Text>
           <Text className="mt-1 text-sm text-white/80">Exploradora cultural • Managua</Text>
@@ -28,7 +38,7 @@ export default function PerfilScreen() {
           <SectionHeader title="Accesos rápidos" subtitle="Gestiona tus actividades al instante" />
           <View className="-mx-2 flex-row flex-wrap">
             {profileShortcuts.map((shortcut) => (
-              <Card key={shortcut.id} className="mx-2 mb-4 w-[46%] items-center bg-background-subtle">
+              <Card key={shortcut.id} style={{ width: shortcutWidth }} className="mx-2 mb-4 items-center bg-background-subtle">
                 <Text className="text-2xl">{shortcut.icon}</Text>
                 <Text className="mt-2 text-sm font-medium text-neutral-700">{shortcut.label}</Text>
               </Card>
@@ -43,7 +53,7 @@ export default function PerfilScreen() {
           />
           <View className="space-y-4">
             <Card className="flex-row items-center bg-white">
-              <View className="mr-4 h-16 w-16 items-center justify-center rounded-3xl bg-primary/10">
+              <View style={{ width: iconBoxSize, height: iconBoxSize }} className="mr-4 items-center justify-center rounded-3xl bg-primary/10">
                 <Text className="text-2xl">🏅</Text>
               </View>
               <View className="flex-1">
@@ -56,7 +66,7 @@ export default function PerfilScreen() {
             </Card>
 
             <Card className="flex-row items-center bg-white">
-              <View className="mr-4 h-16 w-16 items-center justify-center rounded-3xl bg-info/10">
+              <View style={{ width: iconBoxSize, height: iconBoxSize }} className="mr-4 items-center justify-center rounded-3xl bg-info/10">
                 <Text className="text-2xl">🧭</Text>
               </View>
               <View className="flex-1">
