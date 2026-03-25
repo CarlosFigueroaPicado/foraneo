@@ -6,21 +6,29 @@ import { SectionHeader } from '../components/ui/SectionHeader';
 import { curatedActivities, experienceHighlights, heroEvents, sampleItinerary } from '../constants/content';
 import { useNavigation } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useResponsive, useResponsiveValue } from '../hooks/useResponsive';
 
 export default function DetalleScreen() {
   const navigation = useNavigation();
   const experience = heroEvents[0];
   const related = curatedActivities.slice(0, 2);
 
+  // Responsive values
+  const containerPadding = useResponsiveValue({ base: 24, md: 32, lg: 48, xl: 64 });
+  const heroHeight = useResponsiveValue({ base: 360, md: 420, lg: 480 });
+  const iconSize = useResponsiveValue({ base: 48, md: 56, lg: 64 });
+  const relatedImageSize = useResponsiveValue({ base: 80, md: 96, lg: 112 });
+
   return (
     <SafeAreaView className="flex-1 bg-background-default">
       <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 48 }}>
         <ImageBackground
           source={experience.image}
-          className="h-[360px] w-full overflow-hidden"
+          style={{ height: heroHeight, width: '100%' }}
+          className="overflow-hidden"
           imageStyle={{ resizeMode: 'cover' }}
         >
-          <View className="flex-1 justify-between bg-neutral-900/25 px-6 py-6">
+          <View style={{ paddingHorizontal: containerPadding, paddingVertical: 24 }} className="flex-1 justify-between bg-neutral-900/25">
             <View className="flex-row justify-between">
               <Pressable
                 onPress={() => navigation.goBack()}
@@ -50,7 +58,7 @@ export default function DetalleScreen() {
           </View>
         </ImageBackground>
 
-        <View className="-mt-10 px-6">
+        <View style={{ marginTop: -40, paddingHorizontal: containerPadding }}>
           <Card className="-mb-4">
             <View className="flex-row flex-wrap justify-between">
               <InfoPill label="Duración" value="3 horas" />
@@ -61,7 +69,7 @@ export default function DetalleScreen() {
           </Card>
         </View>
 
-        <View className="mt-12 px-6">
+        <View style={{ marginTop: 48, paddingHorizontal: containerPadding }}>
           <SectionHeader
             title="Lo que vivirás"
             subtitle="Momentos destacados que hacen única la experiencia"
@@ -69,7 +77,7 @@ export default function DetalleScreen() {
           <View className="space-y-4">
             {experienceHighlights.map((item) => (
               <Card key={item.id} className="flex-row items-start">
-                <View className="mr-4 h-12 w-12 items-center justify-center rounded-2xl bg-primary/10">
+                <View style={{ width: iconSize, height: iconSize }} className="mr-4 items-center justify-center rounded-2xl bg-primary/10">
                   <Text className="text-xl">{item.icon}</Text>
                 </View>
                 <View className="flex-1">
@@ -81,7 +89,7 @@ export default function DetalleScreen() {
           </View>
         </View>
 
-        <View className="mt-12 px-6">
+        <View style={{ marginTop: 48, paddingHorizontal: containerPadding }}>
           <SectionHeader
             title="Itinerario sugerido"
             subtitle="Mantente a tiempo con este recorrido curado"
@@ -106,12 +114,12 @@ export default function DetalleScreen() {
           </Card>
         </View>
 
-        <View className="mt-12 px-6">
+        <View style={{ marginTop: 48, paddingHorizontal: containerPadding }}>
           <SectionHeader title="Recomendado para ti" subtitle="Experiencias que combinan con este tour" />
           <View className="space-y-5">
             {related.map((item) => (
               <Card key={item.id} className="flex-row items-start">
-                <Image source={item.image} className="mr-4 h-20 w-20 rounded-3xl" />
+                <Image source={item.image} style={{ width: relatedImageSize, height: relatedImageSize }} className="mr-4 rounded-3xl" />
                 <View className="flex-1">
                   <Text className="text-xs uppercase tracking-[1.5px] text-neutral-400">{item.category}</Text>
                   <Text className="mt-1 text-lg font-semibold text-neutral-900">{item.title}</Text>
@@ -127,7 +135,7 @@ export default function DetalleScreen() {
           </View>
         </View>
 
-        <View className="mt-10 px-6">
+        <View style={{ marginTop: 40, paddingHorizontal: containerPadding }}>
           <Button label="Reservar experiencia" />
           <Text className="mt-3 text-center text-xs text-neutral-400">
             *Podrás reprogramar sin costo hasta 24 horas antes del evento.
