@@ -1,5 +1,6 @@
 import { forwardRef } from 'react';
 import { Text, TextInput, TextInputProps, View } from 'react-native';
+import { colors, fontFamilies } from '../../constants/theme';
 
 type InputFieldProps = TextInputProps & {
   label: string;
@@ -15,11 +16,17 @@ export const InputField = forwardRef<TextInput, InputFieldProps>(
 
     return (
       <View className={className}>
-        <Text className="text-sm font-medium text-neutral-700">{label}</Text>
+        <Text
+          className="text-xs"
+          style={{ fontFamily: fontFamilies.interSemiBold, color: colors.primaryText }}
+        >
+          {label}
+        </Text>
         <TextInput
           ref={ref}
-          className={`mt-2 rounded-2xl border border-neutral-200 bg-white px-4 py-3 text-base text-neutral-900 focus:border-primary`}
-          placeholderTextColor="#A3A8B6"
+          className="mt-2 rounded-xl border border-[#E5E7EB] bg-white px-4 py-3 text-sm"
+          style={{ fontFamily: fontFamilies.interRegular, color: colors.primaryText }}
+          placeholderTextColor={colors.placeholderColor}
           {...rest}
         />
         {hint ? <Text className={`mt-1 text-xs ${hintColor}`}>{hint}</Text> : null}

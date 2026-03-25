@@ -2,6 +2,7 @@ import { Image, ScrollView, Text, View } from 'react-native';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { SectionHeader } from '../components/ui/SectionHeader';
+import { InfoItem } from '../components/ui/InfoItem';
 import { profileShortcuts } from '../constants/content';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -17,9 +18,9 @@ export default function PerfilScreen() {
           <Text className="mt-4 text-xl font-semibold text-white">Adriana Méndez</Text>
           <Text className="mt-1 text-sm text-white/80">Exploradora cultural • Managua</Text>
           <View className="mt-4 flex-row space-x-4">
-            <StatPill label="Reservas" value="12" />
-            <StatPill label="Favoritos" value="28" />
-            <StatPill label="Rutas creadas" value="4" />
+            <InfoItem label="Reservas" value="12" variant="stat-pill" />
+            <InfoItem label="Favoritos" value="28" variant="stat-pill" />
+            <InfoItem label="Rutas creadas" value="4" variant="stat-pill" />
           </View>
           <Button label="Editar perfil" variant="secondary" className="mt-6 self-stretch" />
         </Card>
@@ -73,10 +74,10 @@ export default function PerfilScreen() {
         <View className="mt-10">
           <SectionHeader title="Preferencias" subtitle="Personaliza tu feed y notificaciones" />
           <Card className="space-y-4 bg-white">
-            <PreferenceRow primary="Idiomas" secondary="Español, Inglés" />
-            <PreferenceRow primary="Notificaciones" secondary="Push y correo semanal" />
-            <PreferenceRow primary="Intereses" secondary="Cultura, Gastronomía, Naturaleza" />
-            <PreferenceRow primary="Método de pago" secondary="Visa terminación 4821" />
+            <InfoItem label="Idiomas" value="Español, Inglés" variant="preference-row" />
+            <InfoItem label="Notificaciones" value="Push y correo semanal" variant="preference-row" />
+            <InfoItem label="Intereses" value="Cultura, Gastronomía, Naturaleza" variant="preference-row" />
+            <InfoItem label="Método de pago" value="Visa terminación 4821" variant="preference-row" />
           </Card>
         </View>
 
@@ -85,23 +86,5 @@ export default function PerfilScreen() {
         </View>
       </ScrollView>
     </SafeAreaView>
-  );
-}
-
-function StatPill({ label, value }: { label: string; value: string }) {
-  return (
-    <View className="items-center rounded-2xl bg-white/25 px-3 py-2">
-      <Text className="text-lg font-semibold text-white">{value}</Text>
-      <Text className="text-xs text-white/80">{label}</Text>
-    </View>
-  );
-}
-
-function PreferenceRow({ primary, secondary }: { primary: string; secondary: string }) {
-  return (
-    <View className="flex-row items-center justify-between">
-      <Text className="text-sm font-medium text-neutral-600">{primary}</Text>
-      <Text className="text-sm font-semibold text-neutral-900">{secondary}</Text>
-    </View>
   );
 }

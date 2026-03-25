@@ -1,13 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   ActivityIndicator,
-  Animated,
-  Easing,
   FlatList,
   Image,
-  KeyboardAvoidingView,
   Modal,
-  Platform,
   Pressable,
   ScrollView,
   Text,
@@ -19,27 +15,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Controller, useForm } from 'react-hook-form';
 import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useFonts } from 'expo-font';
-import { Baloo2_700Bold } from '@expo-google-fonts/baloo-2';
-import { Inter_400Regular, Inter_600SemiBold } from '@expo-google-fonts/inter';
 import PhoneIllustration from '../resources/login y registro/teléfono.svg';
+import { colors, shadows, fontFamilies } from '../constants/theme';
+import { useAppFonts } from '../hooks/useAppFonts';
+import { KeyboardSafeContainer } from '../components/ui/KeyboardSafeContainer';
+import { FloatingIconBar } from '../components/ui/FloatingIconBar';
 
 const REGISTER_URL = 'https://api.tu-dominio.com/auth/register'; // TODO: Reemplazar con la URL real del backend.
-
-const gradientColors = ['#34D399', '#FACC15', '#22D3EE'] as const;
-const buttonColor = '#2E3192';
-const aquaAccent = '#37CFE3';
-const primaryText = '#111827';
-const helperText = '#6B7280';
-const placeholderColor = '#9CA3AF';
-
-const cardShadow = {
-  shadowColor: '#0F172A',
-  shadowOffset: { width: 0, height: 8 },
-  shadowOpacity: 0.12,
-  shadowRadius: 18,
-  elevation: 6,
-};
 
 const countries = [
   { code: 'NI', name: 'Nicaragua' },
@@ -61,8 +43,6 @@ type SignUpFormValues = {
   country: string;
 };
 
-const AnimatedView = Animated.createAnimatedComponent(View);
-
 export default function SignUpScreen() {
   const router = useRouter();
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -83,46 +63,7 @@ export default function SignUpScreen() {
     return [...countries].sort((a, b) => a.name.localeCompare(b.name));
   }, []);
 
-  const phoneOffset = useRef(new Animated.Value(0)).current;
-  const cameraOffset = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    const createFloatAnimation = (value: Animated.Value, delay: number) =>
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(value, {
-            toValue: -8,
-            duration: 1800,
-            delay,
-            easing: Easing.inOut(Easing.sin),
-            useNativeDriver: true,
-          }),
-          Animated.timing(value, {
-            toValue: 0,
-            duration: 1800,
-            easing: Easing.inOut(Easing.sin),
-            useNativeDriver: true,
-          }),
-        ])
-      );
-
-    const phoneLoop = createFloatAnimation(phoneOffset, 0);
-    const cameraLoop = createFloatAnimation(cameraOffset, 600);
-
-    phoneLoop.start();
-    cameraLoop.start();
-
-    return () => {
-      phoneLoop.stop();
-      cameraLoop.stop();
-    };
-  }, [cameraOffset, phoneOffset]);
-
-  const [fontsLoaded] = useFonts({
-    Baloo2_700Bold,
-    Inter_400Regular,
-    Inter_600SemiBold,
-  });
+  const fontsLoaded = useAppFonts();
 
   const onSubmit = async (values: SignUpFormValues) => {
     try {
@@ -155,7 +96,7 @@ export default function SignUpScreen() {
 
   if (!fontsLoaded) {
     return (
-      <LinearGradient colors={gradientColors} style={{ flex: 1 }}>
+      <LinearGradient colors={colors.gradientColors} style={{ flex: 1 }}>
         <SafeAreaView className="flex-1 items-center justify-center bg-black/10">
           <ActivityIndicator size="large" color="#FFFFFF" />
           <Text className="mt-4 text-base text-white/80">Cargando estilos...</Text>
@@ -165,7 +106,7 @@ export default function SignUpScreen() {
   }
 
   return (
-    <LinearGradient colors={gradientColors} style={{ flex: 1 }}>
+    <LinearGradient colors={colors.gradientColors} style={{ flex: 1 }}>
       <SafeAreaView className="flex-1">
         <View pointerEvents="none" className="absolute inset-0">
           <Image
@@ -175,10 +116,7 @@ export default function SignUpScreen() {
           />
         </View>
 
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          style={{ flex: 1 }}
-        >
+        <KeyboardSafeContainer>
           <ScrollView
             className="flex-1"
             contentContainerStyle={{ flexGrow: 1, paddingBottom: 160 }}
@@ -188,23 +126,23 @@ export default function SignUpScreen() {
               <View className="items-center">
                 <Text
                   className="text-center text-2xl text-white"
-                  style={{ fontFamily: 'Baloo2_700Bold' }}
+                  style={{ fontFamily: fontFamilies.baloo2Bold }}
                 >
                   CREA TU EXPERIENCIA FORÁNEA
                 </Text>
               </View>
 
               <View className="mt-10 flex-1">
-                <View className="rounded-[24px] bg-white/95 p-6" style={cardShadow}>
+                <View className="rounded-[24px] bg-white/95 p-6" style={shadows.cardShadow}>
                   <Text
                     className="text-center text-sm"
-                    style={{ fontFamily: 'Inter_600SemiBold', color: aquaAccent }}
+                    style={{ fontFamily: fontFamilies.interSemiBold, color: colors.aquaAccent }}
                   >
                     CREAR CUENTA
                   </Text>
                   <Text
                     className="mt-2 text-center text-xs"
-                    style={{ fontFamily: 'Inter_400Regular', color: helperText }}
+                    style={{ fontFamily: fontFamilies.interRegular, color: colors.helperText }}
                   >
                     Regístrate para planear tu próximo viaje.
                   </Text>
@@ -213,7 +151,7 @@ export default function SignUpScreen() {
                     <View>
                       <Text
                         className="text-xs"
-                        style={{ color: primaryText, fontFamily: 'Inter_600SemiBold' }}
+                        style={{ color: colors.primaryText, fontFamily: fontFamilies.interSemiBold }}
                       >
                         Correo electrónico
                       </Text>
@@ -230,9 +168,9 @@ export default function SignUpScreen() {
                             autoCapitalize="none"
                             autoCorrect={false}
                             placeholder="tu@correo.com"
-                            placeholderTextColor={placeholderColor}
+                            placeholderTextColor={colors.placeholderColor}
                             className="mt-2 rounded-xl border border-[#E5E7EB] bg-white px-4 py-3 text-sm"
-                            style={{ color: primaryText, fontFamily: 'Inter_400Regular' }}
+                            style={{ color: colors.primaryText, fontFamily: fontFamilies.interRegular }}
                             accessibilityLabel="Campo para ingresar correo electrónico"
                           />
                         )}
@@ -242,7 +180,7 @@ export default function SignUpScreen() {
                     <View>
                       <Text
                         className="text-xs"
-                        style={{ color: primaryText, fontFamily: 'Inter_600SemiBold' }}
+                        style={{ color: colors.primaryText, fontFamily: fontFamilies.interSemiBold }}
                       >
                         Contraseña
                       </Text>
@@ -256,10 +194,10 @@ export default function SignUpScreen() {
                               onChangeText={onChange}
                               onBlur={onBlur}
                               placeholder="Ingresa tu contraseña"
-                              placeholderTextColor={placeholderColor}
+                              placeholderTextColor={colors.placeholderColor}
                               secureTextEntry={!isPasswordVisible}
                               className="flex-1 py-3 text-sm"
-                              style={{ color: primaryText, fontFamily: 'Inter_400Regular' }}
+                              style={{ color: colors.primaryText, fontFamily: fontFamilies.interRegular }}
                               accessibilityLabel="Campo para ingresar contraseña"
                               autoCapitalize="none"
                             />
@@ -272,7 +210,7 @@ export default function SignUpScreen() {
                               <Feather
                                 name={isPasswordVisible ? 'eye-off' : 'eye'}
                                 size={20}
-                                color={placeholderColor}
+                                color={colors.placeholderColor}
                               />
                             </Pressable>
                           </View>
@@ -283,7 +221,7 @@ export default function SignUpScreen() {
                     <View>
                       <Text
                         className="text-xs"
-                        style={{ color: primaryText, fontFamily: 'Inter_600SemiBold' }}
+                        style={{ color: colors.primaryText, fontFamily: fontFamilies.interSemiBold }}
                       >
                         Nombre de usuario
                       </Text>
@@ -298,9 +236,9 @@ export default function SignUpScreen() {
                             autoCapitalize="none"
                             autoCorrect={false}
                             placeholder="@usuario"
-                            placeholderTextColor={placeholderColor}
+                            placeholderTextColor={colors.placeholderColor}
                             className="mt-2 rounded-xl border border-[#E5E7EB] bg-white px-4 py-3 text-sm"
-                            style={{ color: primaryText, fontFamily: 'Inter_400Regular' }}
+                            style={{ color: colors.primaryText, fontFamily: fontFamilies.interRegular }}
                             accessibilityLabel="Campo para ingresar nombre de usuario"
                           />
                         )}
@@ -310,7 +248,7 @@ export default function SignUpScreen() {
                     <View>
                       <Text
                         className="text-xs"
-                        style={{ color: primaryText, fontFamily: 'Inter_600SemiBold' }}
+                        style={{ color: colors.primaryText, fontFamily: fontFamilies.interSemiBold }}
                       >
                         Fecha de nacimiento
                       </Text>
@@ -323,10 +261,10 @@ export default function SignUpScreen() {
                             onChangeText={onChange}
                             onBlur={onBlur}
                             placeholder="DD/MM/YY"
-                            placeholderTextColor={placeholderColor}
+                            placeholderTextColor={colors.placeholderColor}
                             keyboardType="number-pad"
                             className="mt-2 rounded-xl border border-[#E5E7EB] bg-white px-4 py-3 text-sm"
-                            style={{ color: primaryText, fontFamily: 'Inter_400Regular' }}
+                            style={{ color: colors.primaryText, fontFamily: fontFamilies.interRegular }}
                             accessibilityLabel="Campo para ingresar fecha de nacimiento"
                           />
                         )}
@@ -336,7 +274,7 @@ export default function SignUpScreen() {
                     <View>
                       <Text
                         className="text-xs"
-                        style={{ color: primaryText, fontFamily: 'Inter_600SemiBold' }}
+                        style={{ color: colors.primaryText, fontFamily: fontFamilies.interSemiBold }}
                       >
                         País
                       </Text>
@@ -352,11 +290,11 @@ export default function SignUpScreen() {
                           >
                             <Text
                               className="text-sm"
-                              style={{ color: value ? primaryText : placeholderColor, fontFamily: 'Inter_400Regular' }}
+                              style={{ color: value ? colors.primaryText : colors.placeholderColor, fontFamily: fontFamilies.interRegular }}
                             >
                               {value || 'Selecciona tu país'}
                             </Text>
-                            <Feather name="chevron-down" size={20} color={placeholderColor} />
+                            <Feather name="chevron-down" size={20} color={colors.placeholderColor} />
                           </Pressable>
                         )}
                       />
@@ -368,7 +306,7 @@ export default function SignUpScreen() {
                     disabled={isSubmitting}
                     className="mt-6 rounded-xl px-4 py-3"
                     style={{
-                      backgroundColor: buttonColor,
+                      backgroundColor: colors.buttonColor,
                       opacity: isSubmitting ? 0.6 : 1,
                     }}
                     accessibilityRole="button"
@@ -379,7 +317,7 @@ export default function SignUpScreen() {
                     ) : (
                       <Text
                         className="text-center text-sm text-white"
-                        style={{ fontFamily: 'Inter_600SemiBold' }}
+                        style={{ fontFamily: fontFamilies.interSemiBold }}
                       >
                         Crear cuenta
                       </Text>
@@ -389,7 +327,7 @@ export default function SignUpScreen() {
                   <View className="mt-6 flex-row items-center justify-center">
                     <Text
                       className="text-xs"
-                      style={{ color: helperText, fontFamily: 'Inter_400Regular' }}
+                      style={{ color: colors.helperText, fontFamily: fontFamilies.interRegular }}
                     >
                       ¿Ya tienes cuenta?
                     </Text>
@@ -401,7 +339,7 @@ export default function SignUpScreen() {
                     >
                       <Text
                         className="text-xs"
-                        style={{ color: aquaAccent, fontFamily: 'Inter_600SemiBold' }}
+                        style={{ color: colors.aquaAccent, fontFamily: fontFamilies.interSemiBold }}
                       >
                         Inicia sesión
                       </Text>
@@ -412,20 +350,18 @@ export default function SignUpScreen() {
             </View>
           </ScrollView>
 
-          <View className="pointer-events-none absolute bottom-6 left-0 right-0 flex-row items-center justify-between px-10">
-            <AnimatedView
-              className="rounded-full border border-white/30 p-3"
-              style={{ transform: [{ translateY: phoneOffset }] }}
-            >
-              <PhoneIllustration width={32} height={32} fill="#FFFFFF" style={{ opacity: 0.85 }} />
-            </AnimatedView>
-            <AnimatedView
-              className="rounded-full border border-white/30 p-3"
-              style={{ transform: [{ translateY: cameraOffset }] }}
-            >
-              <Feather name="map-pin" size={24} color="rgba(255,255,255,0.8)" />
-            </AnimatedView>
-          </View>
+          <FloatingIconBar
+            icons={[
+              {
+                icon: <PhoneIllustration width={32} height={32} fill="#FFFFFF" style={{ opacity: 0.85 }} />,
+                delay: 0,
+              },
+              {
+                icon: <Feather name="map-pin" size={24} color="rgba(255,255,255,0.8)" />,
+                delay: 600,
+              },
+            ]}
+          />
 
           <Modal
             visible={countryModalVisible}
@@ -437,7 +373,7 @@ export default function SignUpScreen() {
               <View className="max-h-[60%] rounded-t-3xl bg-white p-6">
                 <Text
                   className="text-lg text-neutral-900"
-                  style={{ fontFamily: 'Inter_600SemiBold' }}
+                  style={{ fontFamily: fontFamilies.interSemiBold }}
                 >
                   Selecciona tu país
                 </Text>
@@ -458,7 +394,7 @@ export default function SignUpScreen() {
                     >
                       <Text
                         className="text-sm text-neutral-800"
-                        style={{ fontFamily: 'Inter_400Regular' }}
+                        style={{ fontFamily: fontFamilies.interRegular }}
                       >
                         {item.name}
                       </Text>
@@ -474,7 +410,7 @@ export default function SignUpScreen() {
                 >
                   <Text
                     className="text-center text-sm text-neutral-700"
-                    style={{ fontFamily: 'Inter_600SemiBold' }}
+                    style={{ fontFamily: fontFamilies.interSemiBold }}
                   >
                     Cerrar
                   </Text>
@@ -482,7 +418,7 @@ export default function SignUpScreen() {
               </View>
             </View>
           </Modal>
-        </KeyboardAvoidingView>
+        </KeyboardSafeContainer>
       </SafeAreaView>
     </LinearGradient>
   );
