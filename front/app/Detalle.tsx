@@ -3,6 +3,7 @@ import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { RatingBadge } from '../components/ui/RatingBadge';
 import { SectionHeader } from '../components/ui/SectionHeader';
+import { InfoItem } from '../components/ui/InfoItem';
 import { curatedActivities, experienceHighlights, heroEvents, sampleItinerary } from '../constants/content';
 import { useNavigation } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -53,10 +54,10 @@ export default function DetalleScreen() {
         <View className="-mt-10 px-6">
           <Card className="-mb-4">
             <View className="flex-row flex-wrap justify-between">
-              <InfoPill label="Duración" value="3 horas" />
-              <InfoPill label="Horario" value="9:00 AM - 12:00 PM" />
-              <InfoPill label="Idioma" value="Español / Inglés" />
-              <InfoPill label="Capacidad" value="15 personas" />
+              <InfoItem label="Duración" value="3 horas" variant="info-pill" />
+              <InfoItem label="Horario" value="9:00 AM - 12:00 PM" variant="info-pill" />
+              <InfoItem label="Idioma" value="Español / Inglés" variant="info-pill" />
+              <InfoItem label="Capacidad" value="15 personas" variant="info-pill" />
             </View>
           </Card>
         </View>
@@ -135,14 +136,5 @@ export default function DetalleScreen() {
         </View>
       </ScrollView>
     </SafeAreaView>
-  );
-}
-
-function InfoPill({ label, value }: { label: string; value: string }) {
-  return (
-    <View className="mb-4 w-[48%] rounded-3xl bg-background-subtle px-4 py-3">
-      <Text className="text-xs uppercase tracking-[1.5px] text-neutral-400">{label}</Text>
-      <Text className="mt-1 text-base font-semibold text-neutral-900">{value}</Text>
-    </View>
   );
 }

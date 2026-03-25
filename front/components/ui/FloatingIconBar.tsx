@@ -4,13 +4,29 @@ import { useFloatAnimation } from '../../hooks/useFloatAnimation';
 
 const AnimatedView = Animated.createAnimatedComponent(View);
 
-type FloatingIcon = {
+type FloatingIconProps = {
   icon: ReactElement;
   delay?: number;
 };
 
+/**
+ * Single floating icon with animation.
+ */
+function FloatingIcon({ icon, delay = 0 }: FloatingIconProps) {
+  const offset = useFloatAnimation(delay);
+
+  return (
+    <AnimatedView
+      className="rounded-full border border-white/30 p-3"
+      style={{ transform: [{ translateY: offset }] }}
+    >
+      {icon}
+    </AnimatedView>
+  );
+}
+
 type FloatingIconBarProps = {
-  icons: FloatingIcon[];
+  icons: { icon: ReactElement; delay?: number }[];
   className?: string;
 };
 
@@ -21,18 +37,13 @@ type FloatingIconBarProps = {
 export function FloatingIconBar({ icons, className }: FloatingIconBarProps) {
   return (
     <View className={`pointer-events-none absolute bottom-6 left-0 right-0 flex-row items-center justify-between px-10 ${className || ''}`}>
-      {icons.map((item, index) => {
-        const offset = useFloatAnimation(item.delay || index * 600);
-        return (
-          <AnimatedView
-            key={index}
-            className="rounded-full border border-white/30 p-3"
-            style={{ transform: [{ translateY: offset }] }}
-          >
-            {item.icon}
-          </AnimatedView>
-        );
-      })}
+      {icons.map((item, index) => (
+        <FloatingIcon
+          key={index}
+          icon={item.icon}
+          delay={item.delay !== undefined ? item.delay : index * 600}
+        />
+      ))}
     </View>
   );
 }
